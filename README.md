@@ -28,19 +28,33 @@ To install a skill, copy the `.md` file to whichever location you want and resta
 
 ## Skills
 
+Each skill opens with a short note on what I use it for. They're written for my setup, so check the references to tools, folders and connectors before you rely on them.
+
+### `/memo` — [memo.md](memo.md)
+
+Drafts a memo or working doc in your voice, outline first. It asks who it's for and how heavy it should be, proposes an outline for you to cut, then drafts and iterates in a markdown file. It can also start from a short interview or a meeting transcript.
+
+### `/vet` — [vet.md](vet.md)
+
+Fact-checks a written product before it ships. Fresh-context agents check every claim against its source and quote what they found; higher tiers add an adversarial pair of verifiers, independent re-derivation of headline numbers, and a fix-and-re-vet loop that runs until a pass comes back clean.
+
+### `/expenses` — [expenses.md](expenses.md)
+
+Cleans up Ramp card spend: finds missing memos, receipts and coding, searches every linked inbox (via Superhuman) for receipts and queues forward drafts, and applies plain-English bulk edits. A second mode logs a personally paid productivity benefit to a Google Sheet and fills in the monthly claim form. Needs the Ramp MCP, the Superhuman connector, Claude in Chrome and the `gws` CLI, plus a short profile file of your Ramp coding (see the skill's Setup section). Bundles [`scripts/email_text.py`](scripts/email_text.py) for reading large receipt emails.
+
 ### `/feedback` — [feedback.md](feedback.md)
 
-Process feedback about a bad or wrong Claude output. Invoke it when Claude got something wrong and you want to prevent the mistake from recurring.
+Processes feedback about a bad or wrong Claude output. Invoke it when Claude got something wrong and you want to prevent the mistake from recurring.
 
 What it does:
 - Reads the recent conversation to understand what went wrong
 - Diagnoses the root cause (memory gap, wrong instructions, skill gap, tool misuse, etc.)
-- Proposes ranked, concrete fixes (memory writes, CLAUDE.md edits, skill updates)
+- Proposes ranked, concrete fixes (lessons or memory writes, CLAUDE.md edits, skill updates)
 - Implements only what you approve
 
-**When it triggers:** when you say things like "that was wrong", "don't do that", "you shouldn't have", or otherwise want to capture a lesson learned.
+## Installing
 
 To install at user level:
 ```bash
-cp feedback.md ~/.claude/commands/feedback.md
+cp memo.md vet.md expenses.md feedback.md ~/.claude/commands/
 ```

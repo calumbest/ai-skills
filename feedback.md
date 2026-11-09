@@ -1,6 +1,13 @@
-# Feedback Skill
+---
+name: feedback
+description: Process feedback about a bad or wrong Claude output. Trigger when the user says Claude made an error, got something wrong, or wants to prevent a mistake from recurring. Also triggers on "that was wrong", "you shouldn't have done that", "remember not to", "bad output", or any time the user wants to capture a lesson learned from an interaction. Analyzes root cause and recommends targeted fixes across memory, instructions, skills, MCP usage, or terminal patterns, then implements only what the user approves.
+---
 
-*Source: `/Users/crichards/.claude/commands/feedback.md`*
+# Feedback Processing
+
+> **What I use it for:** Whenever Claude gets something wrong in a way I don't want to see again. Instead of correcting it in the moment and moving on, I run `/feedback` so the fix lands somewhere durable - usually a lessons file my other skills read, sometimes an edit to a skill or CLAUDE.md.
+
+$ARGUMENTS — the user's description of what went wrong (may be empty if context is already in the conversation)
 
 ## Your job
 
@@ -15,7 +22,7 @@ The user is reporting something that went wrong in a recent interaction. Do this
 
 Evaluate all of these before deciding which apply:
 
-**Memory gap** — Claude didn't recall something it should have (a preference, setup detail, or lesson already learned). Fix: write or update a memory file in the project's `memory/` directory or user memory.
+**Memory gap** — Claude didn't recall something it should have (a preference, setup detail, or lesson already learned). Fix: if the project keeps its own lessons store (check its CLAUDE.md, e.g. a `lessons/` folder), update or add a lesson there; otherwise write or update a memory file in the project's `memory/` directory or user memory.
 
 **Missing/wrong instructions** — The behavior follows from absent or contradictory instructions in a CLAUDE.md file. Fix: propose specific edits to the relevant CLAUDE.md (project or user level).
 
@@ -33,10 +40,12 @@ Start with a 2-3 sentence diagnosis: what went wrong and which root cause(s) app
 
 Then list recommendations, ranked by impact (most likely to prevent recurrence first):
 
-> **[N] [Type]: [Short title]**
-> What: [Exactly what to change or add — be specific enough to act on]
-> Why: [Why this prevents the error from recurring]
-> Approve? (yes / skip)
+```
+**[N] [Type]: [Short title]**
+What: [Exactly what to change or add — be specific enough to act on]
+Why: [Why this prevents the error from recurring]
+Approve? (yes / skip)
+```
 
 Cap at 3-5 recommendations. Vague recommendations ("be more careful") are not acceptable — every recommendation must be a concrete, implementable change.
 
