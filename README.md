@@ -42,6 +42,10 @@ Fact-checks a written product before it ships. Fresh-context agents check every 
 
 Cleans up Ramp card spend: finds missing memos, receipts and coding, searches every linked inbox (via Superhuman) for receipts and queues forward drafts, and applies plain-English bulk edits. A second mode logs a personally paid productivity benefit to a Google Sheet and fills in the monthly claim form. Needs the Ramp MCP, the Superhuman connector, Claude in Chrome and the `gws` CLI, plus a short profile file of your Ramp coding (see the skill's Setup section). Bundles [`scripts/email_text.py`](scripts/email_text.py) for reading large receipt emails.
 
+### `/constellation-meetings` — [constellation-meetings.md](constellation-meetings.md)
+
+For people who work from Constellation. Books a room in Robin for each of the day's meetings (a call booth by default, a bigger room for group lunches), then deletes the duplicate calendar events Robin creates and notes the room in the real meeting's description. Needs Claude in Chrome logged in to Robin and Google Calendar access (the `gws` CLI or a connector); Slack search is optional.
+
 ### `/feedback` — [feedback.md](feedback.md)
 
 Processes feedback about a bad or wrong Claude output. Invoke it when Claude got something wrong and you want to prevent the mistake from recurring.
@@ -56,5 +60,5 @@ What it does:
 
 To install at user level:
 ```bash
-cp memo.md vet.md expenses.md feedback.md ~/.claude/commands/
+cp memo.md vet.md expenses.md constellation-meetings.md feedback.md ~/.claude/commands/
 ```
