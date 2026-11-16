@@ -22,6 +22,7 @@ Run in the morning on an office day. Books a room in [Robin](https://dashboard.r
 
 - Booking a room makes Robin's scheduler account create a **second calendar event**, organized by the room's resource calendar, with the user invited as `needsAction`. It reaches the calendar within about 20 seconds. Its `location` is the room's long name. Make one booking on the first run and note the event's `creator` address: that address is how the skill recognizes Robin's events (called "the Robin scheduler" below).
 - Deleting that event from the user's calendar records them as "declined" on it, but **the Robin booking stays**. Robin then shows "You declined, 0 of 1 going".
+- Deleting a booking in Robin (trash icon in the booking's Event details panel, then confirm) removes its calendar event too. To swap rooms, book the new room first, then delete the old booking.
 - Robin shows "Check in starts 10 minutes before" on bookings. This skill ignores check-in.
 - Navigation in Claude in Chrome can fail intermittently with "blocked by your organization's policy". Retry once or twice before giving up.
 
@@ -32,7 +33,7 @@ The room list isn't published here. Build it on the first run and save it in thi
 1. Open Robin's **Meeting spaces** page in Chrome and note the `locationId` in the URL.
 2. Expand each floor and list the rooms. Each room name links to `.../locations/<locationId>/spaces/<id>/details`, which gives its ID.
 3. Open each room's details page for its type, capacity ("Fits N"), amenities (whether it has video) and any note about broken equipment.
-4. Ask the user for their first-choice room and fallback order, and mark rooms that should never be booked (nap rooms, for example).
+4. Ask the user for their first-choice room and fallback order, which floors they want meetings on, and which rooms should never be booked (nap rooms, for example). Note any space that is listed as a room but is really a hangout area, and don't book it for meetings unless the user asks for it.
 
 Booking grid for a date: `https://dashboard.robinpowered.com/constellation/schedule/meeting-rooms?currentDate=YYYY-MM-DD&locationId=<locationId>`.
 
@@ -68,8 +69,9 @@ No room:
 ### 3. Pick a room and a time for each
 
 **Size.** Count the people who will be in the room, not on the invite: for a video call that is the user alone, so a booth. Use the attendee count only for in-person meetings and lunches.
-- 1–2 people in the room: the first-choice booth; if taken, the other 2-person booths and rooms in the order listed, then a free 4-person room on the user's floor.
-- Lunch or in-person meeting with 3+ people: the smallest free room that fits everyone, preferring the user's floor. For lunch, attendees who have declined don't count.
+- 1–2 people in the room: the first-choice booth; if taken, the other 2-person booths and rooms in the order listed, then a free 4-person room on the user's preferred floors.
+- Lunch or in-person meeting with 3+ people: the smallest free room that fits everyone, preferring the user's floors in their order. For lunch, attendees who have declined don't count.
+- **Preferred floors only.** A room on any other floor is a last resort when nothing on the preferred floors is free; if you book one, say so first in the report.
 - Needs video and more than one person in the room: skip the rooms marked "No video".
 
 **Time.** Round the end up to the next 15 minutes (20-minute meeting → 30, 30 → 30). Meetings the user has listed as running over get an extra 15 minutes (mine: 1:1s with my manager). If the padding collides with the user's next booking in the same room, end at that booking's start.
@@ -93,6 +95,7 @@ For each new booking, wait for Robin's event to arrive (poll `events list` for a
 1. **Add the room to the real meeting's description.** Append one line to the original event's `description`: `<Name>: Use <room> in Constellation`. Keep the existing description and add the line after it, separated by `<br><br>` (descriptions are HTML); if the description is empty, the line is the whole description. Don't touch the title or location. Skip the patch if the line is already there. On a recurring meeting, patch the instance ID for that day, not the series. Always pass `sendUpdates: none` so no attendee is emailed; on events the user organizes, attendees can still see the line if they open the event, which is why it's addressed to the user by name.
 2. **Accept** Robin's event (patch the user's `responseStatus` to `accepted`, `sendUpdates: none`).
 3. **Delete** Robin's event from the user's calendar (`events delete`, `sendUpdates: none`).
+4. **Mark Robin's invitation emails done.** Each booking sends an "Invitation: <title>" email from the Robin scheduler. After all bookings, find those threads in the inbox (in Superhuman, `list_threads` filtered to that sender and the inbox label) and mark the ones for today's bookings done and read. Only touch threads from that sender.
 
 Never delete anything that isn't a Robin scheduler event, and never edit anything on a real meeting beyond that one description line. Before deleting, check the event's creator is the Robin scheduler.
 

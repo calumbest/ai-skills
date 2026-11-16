@@ -61,7 +61,7 @@ Work through these, then present one combined report.
 2. **Policy gaps.** Read `missing_items` on each. Ramp's flags are the source of truth; don't invent requirements.
 3. **Receipts for anything that needs one.**
    - Check `ramp_list_unmatched_receipts` around that date and merchant first. If one is sitting there, say so; Ramp often matches it on its own.
-   - Otherwise search every inbox with `list_threads`: merchant name or domain in `from`/`subject_contains`, `start_date` a day before the charge, `end_date` a few days after (hotels and airlines email late). Match on merchant, date and amount within a few percent (tips, currency conversion and pending holds shift totals). Read the full email, never the snippet.
+   - Otherwise search every inbox with `list_threads`: merchant name or domain in `from`/`subject_contains`, `start_date` a day before the charge, `end_date` a few days after (hotels and airlines email late). Match on merchant, date and amount within a few percent (tips, currency conversion and pending holds shift totals). Read the full email, not the snippet: snippets miss tips and final totals, and Uber's first email is only a charge summary.
    - Prefer a real receipt over a "charge summary" or "order confirmation".
    - To get it into Ramp, create a forward draft from the account that holds the email (`create_or_update_draft`, `type: "forward"`, `thread_id`, `to` the receipts address in the profile, `body` a one-line note like "Receipt for $142.30 Hilton 10/21"). Never send: the drafts sit in Superhuman for the user to fire off. Creating the drafts is part of the go-ahead for the report, not something to do before it.
    - Nothing in any inbox → say so and offer two routes: the Ramp upload card (`ramp_open_receipt_uploader`) if they have the file, or marking no-receipt with a reason (`ramp_mark_transaction_missing_receipt` then `ramp_provide_no_receipt_reason`) if they say there isn't one.
@@ -148,7 +148,7 @@ Read the whole tab before every write (`gws sheets +read --spreadsheet ID --rang
 ## Mode: `productivity add`
 
 1. **Find the record.** For an email source, call Superhuman `list_accounts` first and search **every linked account**. Use `list_threads` with `from` (e.g. `uber`, `lyft`, `doordash`, `instacart`) and a date range.
-2. **Read the full email, never the snippet.** `get_thread` results for receipts are huge HTML and get saved to a file; run `python3 scripts/email_text.py <saved file>` to print every message's full text.
+2. **Read the full email, not the snippet**, because snippets miss tips and final totals, and Uber's first email is only a charge summary (below). `get_thread` results for receipts are huge HTML and get saved to a file; run `python3 scripts/email_text.py <saved file>` to print every message's full text.
    - **Uber sends two emails in the same thread**: a "charge summary" right after the trip ("This is not a payment receipt") and the real receipt hours later. Use the receipt, which has the final total (tips included) and the card charged. If only the summary exists, log it with a note in F and re-check at submit time.
    - Pull date, total, currency, route or items, and card. Quote nothing you didn't read.
 3. **Check eligibility.**
@@ -181,7 +181,7 @@ Read the registry and show unsubmitted totals by month and category, plus anythi
 ## Don'ts
 
 - Don't submit the form, create the sheet or write rows without an explicit yes for that specific action.
-- Don't log an expense from a snippet, or estimate an amount. If a total can't be read, ask.
+- Don't estimate an amount. If a total can't be read, ask.
 - Don't add expenses paid on a company card, or decide eligibility for the user.
 - Don't put any form login token or signed-in URL in a file, the sheet or chat; it signs in as the user.
 
